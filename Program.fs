@@ -9,6 +9,11 @@ let main argv =
         config.AddCommand<Weather>("weather")
             .WithAlias("w")
             .WithDescription("Gets the weather in a given location")
+            |> ignore
+            
+        config.AddCommand<Time>("time")
+            .WithAlias("t")
+            .WithDescription("Gets the time in a given location")
             |> ignore)
 
     app.Run(argv)

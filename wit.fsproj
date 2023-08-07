@@ -1,17 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>WhatIsThe</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="commands/Weather.fs" />
+    <Compile Include="commands/Time.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Spectre.Console" Version="0.47.0" />
+    <PackageReference Include="EluciusFTW.SpectreCoff" Version="0.47.13" />
     <PackageReference Include="Spectre.Console.Cli" Version="0.47.0" />
   </ItemGroup>
 </Project>
