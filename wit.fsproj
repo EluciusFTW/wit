@@ -5,6 +5,7 @@
     <RootNamespace>WhatIsThe</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="commands/Settings.fs" />
     <Compile Include="commands/Weather.fs" />
     <Compile Include="commands/Time.fs" />
     <Compile Include="Program.fs" />
