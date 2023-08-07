@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EluciusFTW.SpectreCoff" Version="0.47.13" />
+    <PackageReference Include="Fsharp.Data" Version="6.2.0" />
     <PackageReference Include="Spectre.Console.Cli" Version="0.47.0" />
   </ItemGroup>
 </Project>
