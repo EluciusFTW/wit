@@ -32,12 +32,15 @@ type Time() =
             match (pairs |> Array.tryFind (fun p -> p.[1] = settings.city)) with
             | Some pair -> assemble pair.[0] pair.[1]
             | None -> 
+                E $"The city {settings.city} is not part of a IANA time zone name." |> toConsole
+                BL |> toConsole
+
                 let area = 
                     let areas = 
                         pairs 
                         |> Array.map (fun p -> p.[0])
                         |> Array.distinct 
-                    "The location you specified is not known. Which location are you interested in?" |> chooseFrom areas
+                    "Please select an area" |> chooseFrom areas
                        
                 let city = 
                     let cities = 
@@ -45,7 +48,7 @@ type Time() =
                         |> Array.filter (fun p -> p.[0] = area)
                         |> Array.map (fun p -> p.[1])
                         |> Array.distinct
-                    "The location you specified is not known. Which location are you interested in?" |> chooseFrom cities
+                    "Please select a city" |> chooseFrom cities
                         
                 assemble area city
         
@@ -56,7 +59,5 @@ type Time() =
                 P $"{zoneTime.DateTime}"
             ] |> toConsole
         with ex -> 
-            Many [
-                C $"Error: {ex.Message}" 
-            ] |> toConsole
+            E $"Error: {ex.Message}" |> toConsole
         0
