@@ -6,12 +6,14 @@ open FSharp.Data
 
 module Time = 
     [<Literal>]
-    let locationUrl = "http://worldtimeapi.org/api/timezone/Europe/Stockholm"
-    [<Literal>]
-    let baseUrl = "http://worldtimeapi.org/api/timezone"
+    let sampleUrl = "https://timeapi.io/api/Time/current/zone?timeZone=Europe/Amsterdam"
+    let baseUrl = "https://timeapi.io/api/Time/current/zone"
 
-    type LocationResponse = JsonProvider<baseUrl>
-    type TimeResponse = JsonProvider<locationUrl>
+    [<Literal>]
+    let zonesUrl = "https://timeapi.io/api/TimeZone/AvailableTimeZones"
+    
+    type TimeResponse = JsonProvider<sampleUrl>
+    type ZonesResponse = JsonProvider<zonesUrl>
 
 type Time() =
     inherit Command<Settings.LocationSettings>()
@@ -19,14 +21,42 @@ type Time() =
 
     override _.Execute(_context, settings) = 
 
-        let zones = Time.LocationResponse.Load(Time.baseUrl)
+        let pairs = 
+            Time.ZonesResponse.Load(Time.zonesUrl) 
+            |> Array.map (fun z -> z.Split('/'))
+            |> Array.filter (fun p -> p.Length > 1) 
+
+        let assemble area city = $"{area}/{city}"
+
         let zone = 
-            "Which location are you interested in?" 
-            |> chooseFrom zones 
+            match (pairs |> Array.tryFind (fun p -> p.[1] = settings.city)) with
+            | Some pair -> assemble pair.[0] pair.[1]
+            | None -> 
+                let area = 
+                    let areas = 
+                        pairs 
+                        |> Array.map (fun p -> p.[0])
+                        |> Array.distinct 
+                    "The location you specified is not known. Which location are you interested in?" |> chooseFrom areas
+                       
+                let city = 
+                    let cities = 
+                        pairs 
+                        |> Array.filter (fun p -> p.[0] = area)
+                        |> Array.map (fun p -> p.[1])
+                        |> Array.distinct
+                    "The location you specified is not known. Which location are you interested in?" |> chooseFrom cities
+                        
+                assemble area city
         
-        let zoneTime = Time.TimeResponse.Load($"{Time.baseUrl}/{zone})")
-        Many [  
-            C $"The time in {zone} is "; 
-            P $"{zoneTime.Unixtime}"
-        ] |> toConsole
+        try
+            let zoneTime = Time.TimeResponse.Load($"{Time.baseUrl}?timeZone={zone}")
+            Many [  
+                C $"The time in {zone} is"
+                P $"{zoneTime.DateTime}"
+            ] |> toConsole
+        with ex -> 
+            Many [
+                C $"Error: {ex.Message}" 
+            ] |> toConsole
         0
